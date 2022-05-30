@@ -1,0 +1,3 @@
+recursive-include alice_ml *.npy
+recursive-include alice_ml *.fif
+recursive-include alice_ml *.joblib
