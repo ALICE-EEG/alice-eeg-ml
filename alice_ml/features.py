@@ -14,7 +14,8 @@ from alice_ml import data
 
 eye_move_example = np.load(pkg_resources.open_binary(data, 'eye_move_example.npy'))
 eye_blink_example = np.load(pkg_resources.open_binary(data, 'eye_blink_example.npy'))
-
+mean_pca = np.load(pkg_resources.open_binary(data, 'pca_mean.npy'))
+components_pca = np.load(pkg_resources.open_binary(data, 'pca_components.npy'))
 
 def _cross_corr(epoch_eye, epoch):
     ccov = np.correlate(epoch_eye - epoch_eye.mean(), epoch - epoch.mean(), mode='same')
@@ -345,9 +346,6 @@ def build_pca_features_df(data):
     Returns:
         pd.Dataframe: The feature matrix for the dataset.
     """
-    mean_ = np.load('pca_mean.npy')
-    components_ = np.load('pca_components.npy')
-
     features = ['pca1', 'pca2']
     idx = []
     rows = []
@@ -357,10 +355,10 @@ def build_pca_features_df(data):
         row = []
         idx.append(ic_id)
         try:
-            row = (ic.weights[channels].values - mean_) @ components_.T
+            row = (ic.weights[channels].values - mean_pca) @ components_pca.T
         except:
             try:
-                row = (ic.weights[channels_].values- mean_) @ components_.T
+                row = (ic.weights[channels_].values- mean_pca) @ components_pca.T
             except: # some channels have zero weights in IC, so 'ic.weights[channels_/channels]' gives errors 
                 ch_weights = []
                 for ch in channels:
@@ -368,7 +366,7 @@ def build_pca_features_df(data):
                         ch_weights.append(ic.weights[ch])
                     else:
                         ch_weights.append(0)
-                row = (np.array(ch_weights) - mean_) @ components_.T
+                row = (np.array(ch_weights) - mean_pca) @ components_pca.T
         rows.append(row)
     pca_feature_df = pd.DataFrame(rows, index=idx, columns=features)
 
