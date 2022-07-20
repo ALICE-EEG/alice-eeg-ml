@@ -403,7 +403,7 @@ def get_features_from_mne(obj, ica_obj):
     
     channels_to_use = [ch.lower() for ch in ica_obj.info['ch_names']]
     
-    ic_names = [col for col in ica_df.columns if col not in ('epoch', 'time')]
+    ic_names = [col for col in ica_df.columns if col not in ('epoch', 'time', 'condition')]
 
     data = {}
 
@@ -420,4 +420,4 @@ def get_features_from_mne(obj, ica_obj):
 
         data[ic_name] = IC(ica_obj.info['sfreq'], signal=df_data, weights=df_weights)
     
-    return build_feature_df(data)
+    return build_alice_features_df(data)
