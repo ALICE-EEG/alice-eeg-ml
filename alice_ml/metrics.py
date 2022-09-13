@@ -32,4 +32,7 @@ def mean_pairwise_MI(ica,data,bins=100):
     for i in range(signal.shape[0]):
         for j in range(signal.shape[0]):
             M[i,j] = calc_MI(signal[i],signal[j],bins)
-    return M.mean()
+    upper_mean = []
+    for i in range(len(M)):
+        upper_mean.extend(M[i][i+1:])
+    return np.array(upper_mean).mean()
