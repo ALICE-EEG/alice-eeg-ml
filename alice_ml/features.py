@@ -433,4 +433,4 @@ def get_features_from_mne(obj, ica_obj):
 
         data[ic_name] = IC(ica_obj.info['sfreq'], signal=df_data, weights=df_weights)
     
-    return build_alice_features_df(data)
+    return build_feature_df(data)
