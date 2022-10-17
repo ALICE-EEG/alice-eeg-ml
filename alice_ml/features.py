@@ -88,20 +88,33 @@ def compute_MEV(ic, thres=0.99) -> float:
 
 FA = {'f5', 'f6', 'f7', 'f8', 'f9', 'f10',
       'af3', 'af4', 'af7', 'af8',
-      'fp1', 'fpz', 'fp2'}
+      'fp1', 'fpz', 'fp2','e27','e123','e33','e122','e32','e1','e23',
+      'e3','e26','e2','e22','e15','e21','e14','e9'}
 PA = {'cpz', 'cp1', 'cp2', 'cp3', 'cp4', 'cp5', 'cp6',
       'pz', 'p1', 'p2', 'p3', 'p4', 'p5', 'p6', 't5', 't6', 'p9', 'p10',
       'poz', 'po3', 'po4', 'po7', 'po8',
-      'oz', 'o1', 'o2'}
+      'oz', 'o1', 'o2','e55','e37','e87','e42','e93','e47',
+      'e98','e62','e60','e85','e52','e92','e51','e97',
+      'e58','e96','e64','e95','e72','e67','e77','e65','e90',
+      'e75','e70','e83'}
 LE = {'f3', 'f5', 'f7', 'f9',
-      'af7'}
+      'af7','e24','e27','e33','e32','e26'}
 RE = {'f4', 'f6', 'f8', 'f10',
-      'af6'}
+      'af6','e124','e123','e122','e1','e3'}
 
-FC = {'fp1','fpz','fp2','f3','fz','f4','fc3','fcz','fc4','c3','cz','c4'}
-FC_not={'f7','ft7','t3','tp7','t5','t6','tp8','t4','ft8','f8','cp3','cpz','cp4','p3','pz','p4','o1','oz','o2'}
-FP= {'c3','cz','c4','cp3','cpz','cp4','p3','pz','p4','o1','oz','o2'}
-FP_not={'f7','ft7','t3','tp7','t5','t6','tp8','t4','ft8','f8','fp1','fpz','fp2','f3','fz','f4','fc3','fcz','fc4'}
+FC = {'fp1','fpz','fp2','f3','fz','f4','fc3','fcz','fc4','c3','cz','c4',
+      'e22','e15','e21','e14','e9','e24','e11','e124',
+      'e29','e6','e111','e36','e129','e104'}
+FC_not={'f7','ft7','t3','tp7','t5','t6','tp8','t4','ft8','f8','cp3',
+        'cpz','cp4','p3','pz','p4','o1','oz','o2',
+        'e33','e34','e45','e46','e58','e96','e102','e108','e116',
+        'e122','e42','e55','e93','e52','e62','e92','e70','e83','e75'}
+FP= {'c3','cz','c4','cp3','cpz','cp4','p3','pz','p4','o1','oz','o2',
+    'e36','e129','e104','e42','e55','e93','e52','e62','e92','e70','e83','e75'}
+FP_not={'f7','ft7','t3','tp7','t5','t6','tp8','t4','ft8','f8','fp1','fpz',
+        'fp2','f3','fz','f4','fc3','fcz','fc4',
+        'e33','e34','e45','e46','e58','e96','e102','e108','e116',
+        'e122','e22','e15','e21','e14','e9','e24','e11','e124','e29'}
 
 
 def compute_AT(ic) -> float:
@@ -420,4 +433,4 @@ def get_features_from_mne(obj, ica_obj):
 
         data[ic_name] = IC(ica_obj.info['sfreq'], signal=df_data, weights=df_weights)
     
-    return build_alice_features_df(data)
+    return build_features_df(data)
