@@ -7,7 +7,7 @@ from alice_ml.features import get_features_from_mne
 from alice_ml import pretrained
 
 
-def predict_mne(raw, ica, model = 'lr', features = 'all', flags = 'all'):
+def predict_mne(raw, ica, model = 'lr', features = 'alice', flags = 'all'):
    
     """
     Using of pretrained model on a raw data to predict ICA label via machine learning techniques
