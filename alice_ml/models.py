@@ -7,7 +7,7 @@ from alice_ml.features import get_features_from_mne
 from alice_ml import pretrained
 
 
-def predict_mne(raw, ica, model = 'lr', flags = 'all'):
+def predict_mne(raw, ica, model = 'lr', features = 'all', flags = 'all'):
    
     """
     Using of pretrained model on a raw data to predict ICA label via machine learning techniques
@@ -22,9 +22,11 @@ def predict_mne(raw, ica, model = 'lr', flags = 'all'):
     
     flags : str or list of flags
     What flags to predict, by default "all" - predicting all available flags ('flag_brain', 'flag_alpha', 'flag_mu', 'flag_muscles', 'flag_eyes', 'flag_heart', 'flag_ch_noise')
-    """
     
-    features_df = get_features_from_mne(raw, ica)
+    features: str
+    What features was used to train model, by default "all" ('alice', 'pca', 'alpha'), can be only 'alice'
+    """
+    features_df = get_features_from_mne(raw, ica, features=features)     
 
     scaler = joblib.load(pkg_resources.open_binary(pretrained, 'scaler.joblib'))
 
