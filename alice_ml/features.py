@@ -398,7 +398,7 @@ def build_feature_df(data, average_epochs=False):
     """
     feature_df = pd.concat([build_alice_features_df(data),build_alpha_features_df(data),build_pca_features_df(data)], axis=1)
 
-    return feature_df
+    return feature_df.fillna(0)
 
 def get_features_from_mne(obj, ica_obj, features = 'all'):
     ica_df = ica_obj.get_sources(obj).to_data_frame()
@@ -436,5 +436,5 @@ def get_features_from_mne(obj, ica_obj, features = 'all'):
     if features == 'all':
          features_df = build_feature_df(data)
     elif features == 'alice':
-        features_df = build_alice_features_df(data)
+        features_df = build_alice_features_df(data).fillna(0)
     return features_df
