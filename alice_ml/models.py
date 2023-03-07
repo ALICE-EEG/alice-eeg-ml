@@ -9,12 +9,8 @@ from alice_ml import pretrained
 from sklearn_pmml_model.ensemble import PMMLGradientBoostingClassifier 
 from sklearn_pmml_model.linear_model import PMMLLogisticRegression
 
-<<<<<<< Updated upstream
 
-def predict_mne(raw, ica, model = 'lr', flags = 'all'):
-=======
 def predict_mne(raw, ica, model = 'LR', features = 'all', flags = 'all'):
->>>>>>> Stashed changes
    
     """
     Using of pretrained model on a raw data to predict ICA label via machine learning techniques
@@ -30,14 +26,8 @@ def predict_mne(raw, ica, model = 'LR', features = 'all', flags = 'all'):
     flags : str or list of flags
     What flags to predict, by default "all" - predicting all available flags ('flag_brain', 'flag_alpha', 'flag_mu', 'flag_muscles', 'flag_eyes', 'flag_heart', 'flag_ch_noise')
     """
-<<<<<<< Updated upstream
     
     features_df = get_features_from_mne(raw, ica)
-
-    scaler = joblib.load(pkg_resources.open_binary(pretrained, 'scaler.joblib'))
-=======
-    features_df = get_features_from_mne(raw, ica)    
->>>>>>> Stashed changes
 
     models = {}
     ideces = {}
