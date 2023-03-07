@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_4" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.4">
+	<Header>
+		<Application name="SkLearn2PMML package" version="0.91.0"/>
+		<Timestamp>2023-03-07T09:27:25Z</Timestamp>
+	</Header>
+	<MiningBuildTask>
+		<Extension name="repr">PMMLPipeline(steps=[('classifier', LogisticRegression(solver='liblinear'))])</Extension>
+	</MiningBuildTask>
+	<DataDictionary>
+		<DataField name="flag_mu" optype="categorical" dataType="boolean">
+			<Value value="false"/>
+			<Value value="true"/>
+		</DataField>
+		<DataField name="x1" optype="continuous" dataType="double"/>
+		<DataField name="x2" optype="continuous" dataType="double"/>
+		<DataField name="x3" optype="continuous" dataType="double"/>
+		<DataField name="x4" optype="continuous" dataType="double"/>
+		<DataField name="x5" optype="continuous" dataType="double"/>
+		<DataField name="x6" optype="continuous" dataType="double"/>
+		<DataField name="x7" optype="continuous" dataType="double"/>
+		<DataField name="x8" optype="continuous" dataType="double"/>
+		<DataField name="x9" optype="continuous" dataType="double"/>
+		<DataField name="x10" optype="continuous" dataType="double"/>
+		<DataField name="x11" optype="continuous" dataType="double"/>
+		<DataField name="x12" optype="continuous" dataType="double"/>
+		<DataField name="x13" optype="continuous" dataType="double"/>
+		<DataField name="x14" optype="continuous" dataType="double"/>
+		<DataField name="x15" optype="continuous" dataType="double"/>
+		<DataField name="x16" optype="continuous" dataType="double"/>
+		<DataField name="x17" optype="continuous" dataType="double"/>
+	</DataDictionary>
+	<RegressionModel functionName="classification" algorithmName="sklearn.linear_model._logistic.LogisticRegression" normalizationMethod="logit">
+		<MiningSchema>
+			<MiningField name="flag_mu" usageType="target"/>
+			<MiningField name="x1"/>
+			<MiningField name="x2"/>
+			<MiningField name="x3"/>
+			<MiningField name="x4"/>
+			<MiningField name="x5"/>
+			<MiningField name="x6"/>
+			<MiningField name="x7"/>
+			<MiningField name="x8"/>
+			<MiningField name="x9"/>
+			<MiningField name="x10"/>
+			<MiningField name="x11"/>
+			<MiningField name="x12"/>
+			<MiningField name="x13"/>
+			<MiningField name="x14"/>
+			<MiningField name="x15"/>
+			<MiningField name="x16"/>
+			<MiningField name="x17"/>
+		</MiningSchema>
+		<Output>
+			<OutputField name="probability(false)" optype="continuous" dataType="double" feature="probability" value="false"/>
+			<OutputField name="probability(true)" optype="continuous" dataType="double" feature="probability" value="true"/>
+		</Output>
+		<RegressionTable intercept="-1.999414115899104" targetCategory="true">
+			<NumericPredictor name="x1" coefficient="0.21736294657851024"/>
+			<NumericPredictor name="x2" coefficient="-0.1865687615175033"/>
+			<NumericPredictor name="x3" coefficient="0.3405945201011751"/>
+			<NumericPredictor name="x4" coefficient="-1.117361165718512"/>
+			<NumericPredictor name="x5" coefficient="0.5562353957823353"/>
+			<NumericPredictor name="x6" coefficient="-0.1571299051486189"/>
+			<NumericPredictor name="x7" coefficient="-0.3822848400605603"/>
+			<NumericPredictor name="x8" coefficient="-0.2757818038980295"/>
+			<NumericPredictor name="x9" coefficient="-0.841100736075215"/>
+			<NumericPredictor name="x10" coefficient="0.822745633687058"/>
+			<NumericPredictor name="x11" coefficient="0.07529215761765558"/>
+			<NumericPredictor name="x12" coefficient="0.6702890608605949"/>
+			<NumericPredictor name="x13" coefficient="0.9401270481963347"/>
+			<NumericPredictor name="x14" coefficient="0.20052458165897716"/>
+			<NumericPredictor name="x15" coefficient="0.33210968480720016"/>
+			<NumericPredictor name="x16" coefficient="0.1922342418893658"/>
+			<NumericPredictor name="x17" coefficient="-2.075588876170266"/>
+		</RegressionTable>
+		<RegressionTable intercept="0.0" targetCategory="false"/>
+	</RegressionModel>
+</PMML>

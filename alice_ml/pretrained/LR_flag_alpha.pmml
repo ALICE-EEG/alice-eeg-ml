@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<PMML xmlns="http://www.dmg.org/PMML-4_4" xmlns:data="http://jpmml.org/jpmml-model/InlineTable" version="4.4">
+	<Header>
+		<Application name="SkLearn2PMML package" version="0.91.0"/>
+		<Timestamp>2023-03-07T09:27:20Z</Timestamp>
+	</Header>
+	<MiningBuildTask>
+		<Extension name="repr">PMMLPipeline(steps=[('classifier', LogisticRegression(solver='liblinear'))])</Extension>
+	</MiningBuildTask>
+	<DataDictionary>
+		<DataField name="flag_alpha" optype="categorical" dataType="boolean">
+			<Value value="false"/>
+			<Value value="true"/>
+		</DataField>
+		<DataField name="x1" optype="continuous" dataType="double"/>
+		<DataField name="x2" optype="continuous" dataType="double"/>
+		<DataField name="x3" optype="continuous" dataType="double"/>
+		<DataField name="x4" optype="continuous" dataType="double"/>
+		<DataField name="x5" optype="continuous" dataType="double"/>
+		<DataField name="x6" optype="continuous" dataType="double"/>
+		<DataField name="x7" optype="continuous" dataType="double"/>
+		<DataField name="x8" optype="continuous" dataType="double"/>
+		<DataField name="x9" optype="continuous" dataType="double"/>
+		<DataField name="x10" optype="continuous" dataType="double"/>
+		<DataField name="x11" optype="continuous" dataType="double"/>
+		<DataField name="x12" optype="continuous" dataType="double"/>
+		<DataField name="x13" optype="continuous" dataType="double"/>
+		<DataField name="x14" optype="continuous" dataType="double"/>
+		<DataField name="x15" optype="continuous" dataType="double"/>
+		<DataField name="x16" optype="continuous" dataType="double"/>
+		<DataField name="x17" optype="continuous" dataType="double"/>
+	</DataDictionary>
+	<RegressionModel functionName="classification" algorithmName="sklearn.linear_model._logistic.LogisticRegression" normalizationMethod="logit">
+		<MiningSchema>
+			<MiningField name="flag_alpha" usageType="target"/>
+			<MiningField name="x1"/>
+			<MiningField name="x2"/>
+			<MiningField name="x3"/>
+			<MiningField name="x4"/>
+			<MiningField name="x5"/>
+			<MiningField name="x6"/>
+			<MiningField name="x7"/>
+			<MiningField name="x8"/>
+			<MiningField name="x9"/>
+			<MiningField name="x10"/>
+			<MiningField name="x11"/>
+			<MiningField name="x12"/>
+			<MiningField name="x13"/>
+			<MiningField name="x14"/>
+			<MiningField name="x15"/>
+			<MiningField name="x16"/>
+			<MiningField name="x17"/>
+		</MiningSchema>
+		<Output>
+			<OutputField name="probability(false)" optype="continuous" dataType="double" feature="probability" value="false"/>
+			<OutputField name="probability(true)" optype="continuous" dataType="double" feature="probability" value="true"/>
+		</Output>
+		<RegressionTable intercept="-2.920677706392097" targetCategory="true">
+			<NumericPredictor name="x1" coefficient="-0.505494890561334"/>
+			<NumericPredictor name="x2" coefficient="0.17733952567375078"/>
+			<NumericPredictor name="x3" coefficient="-0.5516290440387291"/>
+			<NumericPredictor name="x4" coefficient="0.02245899819883479"/>
+			<NumericPredictor name="x5" coefficient="-0.37443419021994107"/>
+			<NumericPredictor name="x6" coefficient="-0.0805225569432218"/>
+			<NumericPredictor name="x7" coefficient="0.19141323366145993"/>
+			<NumericPredictor name="x8" coefficient="0.2623272891876416"/>
+			<NumericPredictor name="x9" coefficient="0.8651107558724953"/>
+			<NumericPredictor name="x10" coefficient="0.3212401170842236"/>
+			<NumericPredictor name="x11" coefficient="-0.15619540698813467"/>
+			<NumericPredictor name="x12" coefficient="0.18765278035472432"/>
+			<NumericPredictor name="x13" coefficient="0.13274786543602174"/>
+			<NumericPredictor name="x14" coefficient="-0.29163663619844465"/>
+			<NumericPredictor name="x15" coefficient="0.5361663422982139"/>
+			<NumericPredictor name="x16" coefficient="-0.3693428826472222"/>
+			<NumericPredictor name="x17" coefficient="1.9561623712198761"/>
+		</RegressionTable>
+		<RegressionTable intercept="0.0" targetCategory="false"/>
+	</RegressionModel>
+</PMML>
