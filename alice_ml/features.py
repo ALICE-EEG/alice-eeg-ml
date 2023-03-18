@@ -385,9 +385,9 @@ def build_feature_df(data, average_epochs=False):
     """
     feature_df = pd.concat([build_alice_features_df(data),build_alpha_features_df(data),build_pca_features_df(data)], axis=1)
 
-    return feature_df
+    return feature_df.fillna(0)
 
-def get_features_from_mne(obj, ica_obj):
+def get_features_from_mne(obj, ica_obj, features = 'all'):
     ica_df = ica_obj.get_sources(obj).to_data_frame()
     if isinstance(obj, mne.io.BaseRaw):
         times = np.arange(ica_df.shape[0]) / ica_obj.info['sfreq']
@@ -419,5 +419,10 @@ def get_features_from_mne(obj, ica_obj):
             .groupby('epoch')['value'].apply(np.array).rename('signal'))
 
         data[ic_name] = IC(ica_obj.info['sfreq'], signal=df_data, weights=df_weights)
-    
+
+    if features == 'all':
+         features_df = build_feature_df(data)
+    elif features == 'alice':
+        features_df = build_alice_features_df(data).fillna(0)
+
     return build_alice_features_df(data)
