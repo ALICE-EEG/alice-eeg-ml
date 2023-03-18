@@ -425,4 +425,4 @@ def get_features_from_mne(obj, ica_obj, features = 'all'):
     elif features == 'alice':
         features_df = build_alice_features_df(data).fillna(0)
 
-    return build_alice_features_df(data)
+    return features_df
