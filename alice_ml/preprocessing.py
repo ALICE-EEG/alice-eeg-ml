@@ -52,7 +52,8 @@ class IC:
     @lru_cache(maxsize=10)
     def psd(self, **kwargs):
         epochs = get_epochs_from_df(self.signal, self.freq)
-        powers, freqs = epochs.compute_psd(method='multitaper', picks=[0], verbose=False).get_data(return_freqs=True) 
+        #powers, freqs = epochs.compute_psd(method='multitaper', picks=[0], verbose=False).get_data(return_freqs=True) 
+        powers, freqs = mne.time_frequency.psd_multitaper(epochs, verbose=False, picks=[0])
         return freqs, powers.mean(axis=1)
 
     def plot_psd(self, returns=False):
