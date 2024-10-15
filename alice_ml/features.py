@@ -10,9 +10,7 @@ from scipy.signal import find_peaks, peak_prominences
 from alice_ml.utils import trim
 from alice_ml.preprocessing import IC
 from alice_ml import data
-from scipy.signal import resample
-from ripser import ripser
-from numba import jit
+
 
 eye_move_example = np.load(pkg_resources.open_binary(data, 'eye_move_example.npy'))
 eye_blink_example = np.load(pkg_resources.open_binary(data, 'eye_blink_example.npy'))
@@ -242,6 +240,43 @@ def compute_CORR_MOVE(ic, thres=0.65):
 def compute_CIF(ic):
     # TODO Implement feature. Address low frequency resolution
     raise NotImplementedError
+
+
+def compute_alpha_features(ic, average_epochs=False):
+    peaks_data = pd.DataFrame()
+    freqs, psd = ic.psd(verbose=False)
+
+    freq_thr = np.where((freqs>=1)&(freqs <= 50))[0]
+    freqs = freqs[freq_thr]
+    psd = psd[:, freq_thr] 
+
+    epochs_with_pk = 0
+    epochs_with_pl = 0
+    peaks_coords = []
+    plats_coords = []
+    
+    if average_epochs:
+        psd = psd.mean(axis=0).reshape(1, -1)
+    
+    for i in range(psd.shape[0]):
+        res_pk, psd_pk, res_pl, psd_pl, _ = __alpha_peak_from_psd(freqs, psd[i, :])
+
+        if len(res_pk) > 0 and len(psd_pk) > 0:
+            epochs_with_pk += 1
+            peaks_coords = peaks_coords + res_pk
+
+        if len(res_pl)>0 and len(psd_pl)>0:
+            epochs_with_pl += 1
+            plats_coords = plats_coords + res_pl
+            
+    epochs_with_pk = epochs_with_pk / psd.shape[0]
+    epochs_with_pl = epochs_with_pl / psd.shape[0]
+
+    mean_peak_freq = np.mean(peaks_coords) if len(peaks_coords) > 0 else None
+    mean_plat_freq = np.mean(plats_coords) if len(plats_coords) > 0 else None
+    
+    return epochs_with_pk, epochs_with_pl, mean_peak_freq, mean_plat_freq
+
 def compute_power_ratio(ic, freq_band1=(8, 10), freq_band2=(10, 12)):
     """
     Computes power ratio between two frequency bands.
@@ -501,6 +536,7 @@ def compute_spatial_persistence(ic, region=FC, delay=2, dim=3, max_points=20):
     avg_pers = average_persistence(diagrams[0])
     
     return avg_pers
+
 default_features = {'K': compute_K,
                     'MEV': compute_MEV,
                     'SAD': compute_SAD,
@@ -511,13 +547,13 @@ default_features = {'K': compute_K,
                     'CORR_MOVE': compute_CORR_MOVE,
                     'AT':compute_AT,
                     'MT':compute_MT,
-                    'AMALB':compute_AMALB, 
-                    'Mu_Alpha_Ratio': compute_power_ratio,
+                    'AMALB':compute_AMALB,
+                    # Новые признаки
+                    # 'Mu_Alpha_Ratio': compute_power_ratio,
                     'SMR_Power': compute_spatial_power,
-                    # Новые признаки для персистентности
                     'average_persistence_with_phase': compute_average_persistence_with_phase,  # Новый признак для мю и альфа ритмов
                     'spatial_persistence': compute_spatial_persistence
-                }
+                    }
 
 
 def build_alice_features_df(data, default=True, custom_features={}):
@@ -553,40 +589,6 @@ def build_alice_features_df(data, default=True, custom_features={}):
     return alice_feature_df
 
 
-def compute_alpha_features(ic, average_epochs=False):
-    peaks_data = pd.DataFrame()
-    freqs, psd = ic.psd(verbose=False)
-
-    freq_thr = np.where((freqs>=1)&(freqs <= 50))[0]
-    freqs = freqs[freq_thr]
-    psd = psd[:, freq_thr] 
-
-    epochs_with_pk = 0
-    epochs_with_pl = 0
-    peaks_coords = []
-    plats_coords = []
-    
-    if average_epochs:
-        psd = psd.mean(axis=0).reshape(1, -1)
-    
-    for i in range(psd.shape[0]):
-        res_pk, psd_pk, res_pl, psd_pl, _ = __alpha_peak_from_psd(freqs, psd[i, :])
-
-        if len(res_pk) > 0 and len(psd_pk) > 0:
-            epochs_with_pk += 1
-            peaks_coords = peaks_coords + res_pk
-
-        if len(res_pl)>0 and len(psd_pl)>0:
-            epochs_with_pl += 1
-            plats_coords = plats_coords + res_pl
-            
-    epochs_with_pk = epochs_with_pk / psd.shape[0]
-    epochs_with_pl = epochs_with_pl / psd.shape[0]
-
-    mean_peak_freq = np.mean(peaks_coords) if len(peaks_coords) > 0 else None
-    mean_plat_freq = np.mean(plats_coords) if len(plats_coords) > 0 else None
-    
-    return epochs_with_pk, epochs_with_pl, mean_peak_freq, mean_plat_freq
 def build_alpha_features_df(data, average_epochs=False):
     """
     Computes the feature matrix for the dataset of components.
@@ -731,9 +733,7 @@ def max_persistence(diagram):
     if valid_pairs:
         return np.max(valid_pairs)
     return 0
-
-
-
+      
 def build_feature_df(data, average_epochs=False):
     """
     Computes the feature matrix for the dataset of components.
