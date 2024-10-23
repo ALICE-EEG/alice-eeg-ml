@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import roc_curve, roc_auc_score, f1_score, precision_recall_curve, auc
 
-def plot_aggregated_roc_curve(y_true, y_proba, ax):
+def plot_aggregated_roc_curve(y_true, y_proba, ax, color='darkorange'):
     fprs, tprs = [], []
     for true, proba in zip(y_true, y_proba):
         fpr, tpr, _ = roc_curve(true, proba, drop_intermediate=False)
@@ -25,12 +25,12 @@ def plot_aggregated_roc_curve(y_true, y_proba, ax):
     ax.set_xlim(-0.02, 1.02)
     ax.set_ylim(-0.02, 1.02)
     ax.plot([0, 1], [0, 1], lw=2, color='navy', linestyle='--')
-    ax.plot(mean_values.index, mean_values['tpr'], lw=2, color='darkorange')
+    ax.plot(mean_values.index, mean_values['tpr'], lw=2, color=color)
     ax.fill_between(mean_values.index, mean_values['tpr'] - 1.96 * value_stds,
-                    mean_values['tpr'] + 1.96 * value_stds, alpha=0.2, lw=2, color='darkorange')
+                    mean_values['tpr'] + 1.96 * value_stds, alpha=0.2, lw=2, color=color)
 
 
-def plot_aggregated_pr_curve(y_true, y_proba, ax):
+def plot_aggregated_pr_curve(y_true, y_proba, ax, color='darkorange'):
     precs, recs = [], []
     for true, proba in zip(y_true, y_proba):
         prec, rec, _ = precision_recall_curve(true, proba)
@@ -53,8 +53,7 @@ def plot_aggregated_pr_curve(y_true, y_proba, ax):
     ax.set_xlim(-0.02, 1.02)
     ax.set_ylim(-0.02, 1.02)
     ax.axhline(y_true.mean(), 0, 1, lw=2, color='navy', linestyle='--')
-    ax.plot(mean_values.index, mean_values['prec'], lw=2, color='darkorange')
+    ax.plot(mean_values.index, mean_values['prec'], lw=2, color=color)
     ax.fill_between(mean_values.index, mean_values['prec'] - 1.96 * value_stds,
-                    mean_values['prec'] + 1.96 * value_stds, alpha=0.2, lw=2, color='darkorange')
-
+                    mean_values['prec'] + 1.96 * value_stds, alpha=0.2, lw=2, color=color)
 
