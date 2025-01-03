@@ -10,6 +10,15 @@ from scipy.signal import find_peaks, peak_prominences
 from alice_ml.utils import trim
 from alice_ml.preprocessing import IC
 from alice_ml import data
+from scipy.signal import resample
+from ripser import ripser
+from numba import jit
+
+import random
+
+# Set random seed for reproducibility
+np.random.seed(42)
+random.seed(42)
 
 
 eye_move_example = np.load(pkg_resources.open_binary(data, 'eye_move_example.npy'))
@@ -240,43 +249,6 @@ def compute_CORR_MOVE(ic, thres=0.65):
 def compute_CIF(ic):
     # TODO Implement feature. Address low frequency resolution
     raise NotImplementedError
-
-
-def compute_alpha_features(ic, average_epochs=False):
-    peaks_data = pd.DataFrame()
-    freqs, psd = ic.psd(verbose=False)
-
-    freq_thr = np.where((freqs>=1)&(freqs <= 50))[0]
-    freqs = freqs[freq_thr]
-    psd = psd[:, freq_thr] 
-
-    epochs_with_pk = 0
-    epochs_with_pl = 0
-    peaks_coords = []
-    plats_coords = []
-    
-    if average_epochs:
-        psd = psd.mean(axis=0).reshape(1, -1)
-    
-    for i in range(psd.shape[0]):
-        res_pk, psd_pk, res_pl, psd_pl, _ = __alpha_peak_from_psd(freqs, psd[i, :])
-
-        if len(res_pk) > 0 and len(psd_pk) > 0:
-            epochs_with_pk += 1
-            peaks_coords = peaks_coords + res_pk
-
-        if len(res_pl)>0 and len(psd_pl)>0:
-            epochs_with_pl += 1
-            plats_coords = plats_coords + res_pl
-            
-    epochs_with_pk = epochs_with_pk / psd.shape[0]
-    epochs_with_pl = epochs_with_pl / psd.shape[0]
-
-    mean_peak_freq = np.mean(peaks_coords) if len(peaks_coords) > 0 else None
-    mean_plat_freq = np.mean(plats_coords) if len(plats_coords) > 0 else None
-    
-    return epochs_with_pk, epochs_with_pl, mean_peak_freq, mean_plat_freq
-
 def compute_power_ratio(ic, freq_band1=(8, 10), freq_band2=(10, 12)):
     """
     Computes power ratio between two frequency bands.
@@ -340,29 +312,33 @@ def takens_embedding(signal, delay, dim):
         embedding[:, i] = signal[i * delay:N - (dim - 1 - i) * delay]
     return embedding
 
+import numpy as np
+
 def downsample_to_dynamic_points(signal, max_points=20):
     """
-    Уменьшает количество точек в сигнале до пропорционального количества, если длина сигнала превышает max_points.
+    Reduces the number of points in a signal to a fixed number if the signal length exceeds max_points.
 
     Args:
-        signal (np.array): Временной ряд.
-        max_points (int): Максимальное количество точек (по умолчанию 20).
+        signal (np.array): Time series data.
+        max_points (int): Maximum number of points (default: 20).
 
     Returns:
-        np.array: Субдискретизированный временной ряд, если длина сигнала превышает max_points.
+        np.array: Downsampled time series if the signal length exceeds max_points.
     """
     num_points = len(signal)
 
+    # If the signal length is less than or equal to max_points, return the original signal
     if num_points <= max_points:
         return signal
 
-    reduction_factor = max_points / num_points
-    downsampled_signal = signal[::int(1 / reduction_factor)]
-    
-    if len(downsampled_signal) > max_points:
-        downsampled_signal = downsampled_signal[:max_points]
+    # Generate fixed equally spaced indices
+    indices = np.linspace(0, num_points - 1, max_points, dtype=int)
+
+    # Select the points based on indices
+    downsampled_signal = signal[indices]
 
     return downsampled_signal
+
 
 def compute_persistent_homology_with_ripser(embedding):
     """
@@ -547,13 +523,15 @@ default_features = {'K': compute_K,
                     'CORR_MOVE': compute_CORR_MOVE,
                     'AT':compute_AT,
                     'MT':compute_MT,
-                    'AMALB':compute_AMALB,
+                    'AMALB':compute_AMALB, 
                     # Новые признаки
-                    # 'Mu_Alpha_Ratio': compute_power_ratio,
-                    'SMR_Power': compute_spatial_power,
+                    'Mu_Alpha_Ratio': compute_power_ratio,
+                    'SMR_Power_FC': lambda ic: compute_spatial_power(ic, region=FC),  # Wrapped in lambda
+                    'SMR_Power_PA': lambda ic: compute_spatial_power(ic, region=FP),  # Wrapped in lambda
                     'average_persistence_with_phase': compute_average_persistence_with_phase,  # Новый признак для мю и альфа ритмов
-                    'spatial_persistence': compute_spatial_persistence
-                    }
+                    'spatial_persistence_FC': lambda ic: compute_spatial_persistence(ic, region=FC),  # Wrapped in lambda
+                    'spatial_persistence_PA': lambda ic: compute_spatial_persistence(ic, region=FP)  # Wrapped in lambda
+                }
 
 
 def build_alice_features_df(data, default=True, custom_features={}):
@@ -589,6 +567,40 @@ def build_alice_features_df(data, default=True, custom_features={}):
     return alice_feature_df
 
 
+def compute_alpha_features(ic, average_epochs=False):
+    peaks_data = pd.DataFrame()
+    freqs, psd = ic.psd(verbose=False)
+
+    freq_thr = np.where((freqs>=1)&(freqs <= 50))[0]
+    freqs = freqs[freq_thr]
+    psd = psd[:, freq_thr] 
+
+    epochs_with_pk = 0
+    epochs_with_pl = 0
+    peaks_coords = []
+    plats_coords = []
+    
+    if average_epochs:
+        psd = psd.mean(axis=0).reshape(1, -1)
+    
+    for i in range(psd.shape[0]):
+        res_pk, psd_pk, res_pl, psd_pl, _ = __alpha_peak_from_psd(freqs, psd[i, :])
+
+        if len(res_pk) > 0 and len(psd_pk) > 0:
+            epochs_with_pk += 1
+            peaks_coords = peaks_coords + res_pk
+
+        if len(res_pl)>0 and len(psd_pl)>0:
+            epochs_with_pl += 1
+            plats_coords = plats_coords + res_pl
+            
+    epochs_with_pk = epochs_with_pk / psd.shape[0]
+    epochs_with_pl = epochs_with_pl / psd.shape[0]
+
+    mean_peak_freq = np.mean(peaks_coords) if len(peaks_coords) > 0 else None
+    mean_plat_freq = np.mean(plats_coords) if len(plats_coords) > 0 else None
+    
+    return epochs_with_pk, epochs_with_pl, mean_peak_freq, mean_plat_freq
 def build_alpha_features_df(data, average_epochs=False):
     """
     Computes the feature matrix for the dataset of components.
@@ -733,7 +745,9 @@ def max_persistence(diagram):
     if valid_pairs:
         return np.max(valid_pairs)
     return 0
-      
+
+
+
 def build_feature_df(data, average_epochs=False):
     """
     Computes the feature matrix for the dataset of components.
